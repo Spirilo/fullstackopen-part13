@@ -1,5 +1,9 @@
 require('dotenv').config()
 const { Sequelize, Model, DataTypes, DATE } = require('sequelize')
+const express = require('express')
+const app = express()
+
+app.use(express.json())
 
 const sequelize = new Sequelize(process.env.DATABASE_URL)
 
@@ -33,18 +37,33 @@ Blog.init({
   modelName: 'blog'
 })
 
-const main = async () => {
-  try {
-    await sequelize.authenticate()
-    console.log('Connection has been established successfully.')
-    const blogs = await Blog.findAll()
-    blogs.map(b => {
-      console.log(`Blog: ${b.dataValues.title}, read at: ${b.dataValues.url}. Likes: ${b.dataValues.likes} `)
-    })
-    sequelize.close()
-  } catch (error) {
-    console.error('Unable to connect to the database:', error)
-  }
-}
+Blog.sync()
 
-main()
+app.get('/api/blogs', async (req, res) => {
+  const blogs = await Blog.findAll()
+  res.json(blogs)
+})
+
+app.post('/api/blogs', async (req, res) => {
+  console.log(req.body)
+  try {
+    const blog = await Blog.create(req.body)
+    return res.json(blog)
+  } catch (error) {
+    return res.status(400).json({ error })
+  }
+})
+
+app.delete('/api/blogs/:id', async (req, res) => {
+  try {
+    await Blog.destroy({ where: { id: req.params.id } })
+    return res.status(200).end()
+  } catch (error) {
+    return res.status(400).json({ error })
+  }
+})
+
+const PORT = process.env.PORT || 3001
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
