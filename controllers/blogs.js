@@ -1,11 +1,7 @@
 const router = require('express').Router()
 
 const { Blog } = require('../models')
-
-const blogFinder = async (req, res, next) => {
-  req.blog = await Blog.findByPk(req.params.id)
-  next()
-}
+const { blogFinder } = require('../util/middleware')
 
 router.get('/', async (req, res) => {
   const blogs = await Blog.findAll()
@@ -13,23 +9,17 @@ router.get('/', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
-  console.log(req.body)
-  try {
-    const blog = await Blog.create(req.body)
-    return res.json(blog)
-  } catch (error) {
-    return res.status(400).json({ error })
-  }
+  const blog = await Blog.create(req.body)
+  return res.json(blog)
 })
 
 router.put('/:id', blogFinder, async (req, res) => {
-  if (req.blog) {
-    req.blog.likes = req.body.likes
-    await req.blog.save()
-    res.json(req.note)
-  } else {
-    res.status(404).end()
+  if(!req.body.likes) {
+    return res.status(404).json({ error: 'No likes in body!'})
   }
+  req.blog.likes = req.body.likes
+  await req.blog.save()
+  res.json(req.note)
 })
 
 router.delete('/:id', blogFinder, async (req, res) => {
