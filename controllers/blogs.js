@@ -19,7 +19,7 @@ router.put('/:id', blogFinder, async (req, res) => {
   }
   req.blog.likes = req.body.likes
   await req.blog.save()
-  res.json(req.note)
+  res.json(req.blog)
 })
 
 router.delete('/:id', blogFinder, async (req, res) => {
