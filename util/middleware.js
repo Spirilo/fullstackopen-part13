@@ -1,8 +1,11 @@
 const { Blog } = require('../models')
 
 const errorHandler = (error, request, response, next) => {
-  console.error(error.message)
+  console.error(error.errors[0])
 
+  if (error.errors[0].path === 'username') {
+    return response.status(400).send({ error: 'Username missing or not an email!' })
+  }
   if (error.name === 'SequelizeValidationError') {
     return response.status(400).send({ error: 'Missing url and/or title!' })
   }
