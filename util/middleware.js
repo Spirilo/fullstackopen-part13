@@ -9,6 +9,9 @@ const errorHandler = (error, request, response, next) => {
   if (error.errors[0].path === 'username') {
     return response.status(400).send({ error: 'Username missing or not an email!' })
   }
+  if (error.errors[0].path === 'year') {
+    return response.status(400).send({ error: 'Year must be between 1991 - present!' })
+  }
   if (error.name === 'SequelizeValidationError') {
     return response.status(400).send({ error: 'Missing url and/or title!' })
   }
