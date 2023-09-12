@@ -4,7 +4,7 @@ const { sequelize } = require('../util/db')
 const router = require('express').Router()
 
 router.get('/', async (req, res) => {
-  const data = await Blog.findAll({
+  const authorData = await Blog.findAll({
     attributes: [
       'author',
       [sequelize.fn('COUNT', sequelize.col('title')), 'blogs'],
@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
     order: [['likes', 'DESC']],
     group: 'author'
   })
-  res.json(data)
+  res.json(authorData)
 })
 
 module.exports = router
