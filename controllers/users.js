@@ -29,9 +29,14 @@ router.get('/:id', async (req, res) => {
       as: 'markedBlogs',
       through: {
         attributes: []
+      },
+      include: {
+        model: ReadingList,
+        attributes: ['read', 'id']
       }
     }
   })
+  await user.addProfile
   res.json(user)
 })
 
